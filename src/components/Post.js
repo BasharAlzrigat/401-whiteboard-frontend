@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import AddPostForm from "./AddPostForm";
 import AddCommentForm from "./AddCommentForm";
@@ -21,7 +22,7 @@ export default function Post() {
   const handleAddPostSubmit = async (event) => {
     event.preventDefault();
     const bodyObj = { title: event.target.post.value, content: "" };
-    let result = await axios.post(`${url}/post`, bodyObj);
+     await axios.post(`${url}/post`, bodyObj);
     setShowPostForm(false);
     handleData();
   };
@@ -33,7 +34,7 @@ export default function Post() {
       comments: event.target.comment.value,
       postID: postId,
     };
-    let result = await axios.post(`${url}/comments`, bodyObj);
+     await axios.post(`${url}/comments`, bodyObj);
     setShowCommentForm(false);
     handleData();
   };
