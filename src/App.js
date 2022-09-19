@@ -1,7 +1,7 @@
 import './App.css';
 import Post from './components/Post'
 import { BrowserRouter } from "react-router-dom";
-import { Routes, Route, Outlet, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Signin from './components/Signin';
 import Signup from './components/Signup';
 import Login from './components/Login';
