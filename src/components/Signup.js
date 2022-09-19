@@ -26,7 +26,7 @@ export default function Signup() {
 
     await axios
       .post(`${url}/signup`, body)
-      .then((result) => {
+      .then(() => {
         navigate("/signin")
       })
       .catch((err) => {

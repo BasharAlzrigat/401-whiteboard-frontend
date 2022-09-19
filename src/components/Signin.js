@@ -23,12 +23,11 @@ export default function Signin() {
     await axios
       .post(`${url}/signin`, {}, {
         headers: { Authorization: `Basic ${basicAuth}` }
-      }).then((result) => {
-        console.log("result", result);
+      }).then(() => {
         navigate("/post");
       })
       .catch((err) => {
-        console.log("error", err);
+        alert("Error " + err.response.data);
       });
   };
   return (
