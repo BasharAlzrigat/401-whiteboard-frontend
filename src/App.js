@@ -10,6 +10,7 @@ import { useCookies } from 'react-cookie';
 
 
 function App() {
+  // eslint-disable-next-line no-unused-vars
   const [cookies, setCookie] = useCookies(['userCookie']);
   console.log("cookies", cookies);
   return (
