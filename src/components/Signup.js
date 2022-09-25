@@ -20,7 +20,7 @@ export default function Signup() {
 
     const url = process.env.REACT_APP_BACK_END_URL;
     const body = {
-      username: e.target.username.value,
+      username: e.target.username.value.toLowerCase(),
       password: e.target.password.value,
     };
 
@@ -30,7 +30,7 @@ export default function Signup() {
         navigate("/signin")
       })
       .catch((err) => {
-        console.log("error");
+        console.log("error", err);
       });
   };
   return (

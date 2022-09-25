@@ -1,15 +1,26 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useCookies } from 'react-cookie';
 import AddPostForm from "./AddPostForm";
 import AddCommentForm from "./AddCommentForm";
-import axios from "axios";
 
 export default function Post() {
   const [showPostForm, setShowPostForm] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [postData, setPostData] = useState([]);
   const [postId, setPostId] = useState();
+  const [cookies, setCookie] = useCookies(['userCookie']);
   const url = process.env.REACT_APP_BACK_END_URL;
+  const bearerAuth = cookies.userCookie.token;
+  console.log("bearerAuth!!!!!!!!!", bearerAuth);
+  const config = {
+    headers: { Authorization: `Basic ${bearerAuth}` }
+};
+console.log("!!!!!!!!config", config);
+
+  console.log("bearerAuth", bearerAuth);
 
   const handlePostFormClose = () => {
     setShowPostForm(false);
@@ -22,7 +33,7 @@ export default function Post() {
   const handleAddPostSubmit = async (event) => {
     event.preventDefault();
     const bodyObj = { title: event.target.post.value, content: "" };
-     await axios.post(`${url}/post`, bodyObj);
+     await axios.post(`${url}/post`, bodyObj, config);
     setShowPostForm(false);
     handleData();
   };
@@ -43,16 +54,14 @@ export default function Post() {
     let postsData = [];
     let finalPostsData = [];
     await axios
-      .get(`${url}/post`)
-      .then((postsResult) => {
+      .get(`${url}/post`, config).then((postsResult) => {
         postsData = postsResult.data;
       })
       .catch((err) => {
         console.log("getting Post Error:", err);
       });
     await axios
-      .get(`${url}/comments`)
-      .then((commentsResult) => {
+      .get(`${url}/comments`).then((commentsResult) => {
         if (commentsResult.data.length !== 0) {
           postsData.forEach((post) => {
             commentsResult.data.forEach((comment) => {
