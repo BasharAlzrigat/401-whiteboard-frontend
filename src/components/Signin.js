@@ -2,8 +2,10 @@ import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import base64 from 'base-64';
+import { useCookies } from 'react-cookie';
 
-export default function Signin() {
+export default function Signin({cookie}) {
+  const [cookies, setCookie] = useCookies(['user']);
   const navigate = useNavigate();
   const handleSignin = async (e) => {
     e.preventDefault();
@@ -15,16 +17,20 @@ export default function Signin() {
 
     const url = process.env.REACT_APP_BACK_END_URL;
 
-     const username = e.target.username.value;
+     const username = e.target.username.value.toLowerCase();
      const password =  e.target.password.value;
-     var basicAuth = base64.encode(`${username}:${password}`);
+     const basicAuth = base64.encode(`${username}:${password}`);
+
+     console.log("basicAuth", basicAuth);
 
 
     await axios
       .post(`${url}/signin`, {}, {
         headers: { Authorization: `Basic ${basicAuth}` }
-      }).then(() => {
-        navigate("/post");
+      }).then((result) => {
+        setCookie('userCookie', result.data, { path: '/' })
+        console.log("result.data", result.data);
+        navigate("/posts");
       })
       .catch((err) => {
         alert("Error " + err.response.data);

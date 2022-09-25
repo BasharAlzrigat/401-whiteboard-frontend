@@ -9,10 +9,10 @@ export default function Login() {
         <p>Hello there, welcome to our website Signin and start posting and commenting right away!</p>
         <p>Does not have account? dont worry you can Signup <a className="mb-0" href="/signup">here</a> </p>
         <div className="d-flex flex-column justify-content-center gap-4">
-      <button onClick={()=>navigate("/signin")} type="button" class="btn btn-primary btn-lg btn-block">
+      <button onClick={()=>navigate("/signin")} type="button" className="btn btn-primary btn-lg btn-block">
         Signin
       </button>
-      <button onClick={()=>navigate("/signup")} type="button" class="btn btn-secondary btn-lg btn-block">
+      <button onClick={()=>navigate("/signup")} type="button" className="btn btn-secondary btn-lg btn-block">
         Signup
       </button>
       </div>
