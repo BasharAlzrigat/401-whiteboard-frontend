@@ -49,13 +49,20 @@ export default function Post() {
   const handleAddCommentSubmit = async (event) => {
     event.preventDefault();
 
-    const bodyObj = {
+    const body = {
       comments: event.target.comment.value,
       postID: postId,
+      id_users: cookies.userCookie.user.id,
     };
-    await axios.post(`${url}/comments`, bodyObj);
-    setShowCommentForm(false);
-    handleData();
+    await axios
+      .post(`${url}/comments`, body)
+      .then(() => {
+        setShowCommentForm(false);
+        handleData();
+      })
+      .catch((err) => {
+        console.log("error in adding comment", err);
+      });
   };
 
   const handleData = async () => {
@@ -94,7 +101,10 @@ export default function Post() {
   const handleDeletePost = async (postId) => {
     await axios
       .delete(`${url}/post/${postId}`, config)
-      .then(() => handleData())
+      .then(() => {
+        handleData();
+        setShowConfirmAlert(false);
+      })
       .catch((err) => console.log("error in deleteing post", err));
   };
 
