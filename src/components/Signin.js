@@ -3,10 +3,11 @@ import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import base64 from 'base-64';
-import { useCookies } from 'react-cookie';
+import { useContext } from "react";
+import { ListContext } from "./Context";
 
 export default function Signin({cookie}) {
-  const [cookies, setCookie] = useCookies(['user']);
+  const { setCookie } = useContext(ListContext);
   const navigate = useNavigate();
   const handleSignin = async (e) => {
     e.preventDefault();

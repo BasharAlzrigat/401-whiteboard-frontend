@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
-import { useCookies } from "react-cookie";
+import { useContext } from "react";
+import { ListContext } from "./Context";
 
 export default function Header() {
-  const [cookies, setCookie, removeCookie] = useCookies(["userCookie"]);
+  const { cookies, removeCookie } = useContext(ListContext);
   console.log(cookies);
   const handleSignOut = () => {
     removeCookie("userCookie");

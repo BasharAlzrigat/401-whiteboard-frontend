@@ -2,7 +2,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useCookies } from "react-cookie";
+import { useContext } from "react";
+import { ListContext } from "./Context";
 import AddPostForm from "./AddPostForm";
 import AddCommentForm from "./AddCommentForm";
 import ConfirmAlert from "./ConfirmAlert";
@@ -15,7 +16,7 @@ export default function Post() {
   const [showEditPostForm, setShowEditPostForm] = useState({ show: false });
   const [postData, setPostData] = useState([]);
   const [postId, setPostId] = useState();
-  const [cookies, setCookie] = useCookies(["userCookie"]);
+  const { cookies } = useContext(ListContext);
   const url = process.env.REACT_APP_BACK_END_URL;
   const bearerAuth = cookies.userCookie.token;
   const config = {
