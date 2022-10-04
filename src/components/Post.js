@@ -8,6 +8,7 @@ import AddPostForm from "./AddPostForm";
 import AddCommentForm from "./AddCommentForm";
 import ConfirmAlert from "./ConfirmAlert";
 import EditPostForm from "./EditPostForm";
+import { useNavigate } from "react-router-dom";
 
 export default function Post() {
   const [showPostForm, setShowPostForm] = useState(false);
@@ -16,9 +17,10 @@ export default function Post() {
   const [showEditPostForm, setShowEditPostForm] = useState({ show: false });
   const [postData, setPostData] = useState([]);
   const [postId, setPostId] = useState();
-  const { cookies } = useContext(ListContext);
+  const { token, loggedIn, canDo, userData } = useContext(ListContext);
+  const navigate = useNavigate();
   const url = process.env.REACT_APP_BACK_END_URL;
-  const bearerAuth = cookies.userCookie.token;
+  const bearerAuth = token;
   const config = {
     headers: { Authorization: `Basic ${bearerAuth}` },
   };
@@ -40,87 +42,98 @@ export default function Post() {
   };
 
   const handleAddPostSubmit = async (event) => {
-    event.preventDefault();
-    const bodyObj = { title: event.target.post.value, content: "" };
-    await axios.post(`${url}/post`, bodyObj, config);
-    setShowPostForm(false);
-    handleData();
+    if (canDo("addPost")) {
+      event.preventDefault();
+      const bodyObj = { title: event.target.post.value, content: "" };
+      await axios.post(`${url}/post`, bodyObj, config);
+      setShowPostForm(false);
+      handleData();
+    }
   };
 
   const handleAddCommentSubmit = async (event) => {
-    event.preventDefault();
+    if (canDo("addComment")) {
+      event.preventDefault();
 
-    const body = {
-      comments: event.target.comment.value,
-      postID: postId,
-      id_users: cookies.userCookie.user.id,
-    };
-    await axios
-      .post(`${url}/comments`, body)
-      .then(() => {
-        setShowCommentForm(false);
-        handleData();
-      })
-      .catch((err) => {
-        console.log("error in adding comment", err);
-      });
+      const body = {
+        comments: event.target.comment.value,
+        postID: postId,
+        id_users: userData.userInfo.id,
+      };
+      await axios
+        .post(`${url}/comments`, body)
+        .then(() => {
+          setShowCommentForm(false);
+          handleData();
+        })
+        .catch((err) => {
+          console.log("error in adding comment", err);
+        });
+    }
   };
 
   const handleData = async () => {
-    let postsData = [];
-    let finalPostsData = [];
-    await axios
-      .get(`${url}/post`, config)
-      .then((postsResult) => {
-        postsData = postsResult.data;
-      })
-      .catch((err) => {
-        console.log("getting Post Error:", err);
-      });
-    await axios
-      .get(`${url}/comments`)
-      .then((commentsResult) => {
-        console.log("commentsResult", commentsResult);
-        if (commentsResult.data.length !== 0) {
-          postsData.forEach((post) => {
-            commentsResult.data.forEach((comment) => {
-              if (Number(post.id) === Number(comment.postID)) {
-                if (!post.contents) post.contents = [];
-                post.contents.push(comment.comments);
-              }
+    if (canDo("getPosts")) {
+      let postsData = [];
+      let finalPostsData = [];
+      await axios
+        .get(`${url}/post`, config)
+        .then((postsResult) => {
+          postsData = postsResult.data;
+        })
+        .catch((err) => {
+          console.log("getting Post Error:", err);
+        });
+      await axios
+        .get(`${url}/comments`)
+        .then((commentsResult) => {
+          console.log("commentsResult", commentsResult);
+          if (commentsResult.data.length !== 0) {
+            postsData.forEach((post) => {
+              commentsResult.data.forEach((comment) => {
+                if (Number(post.id) === Number(comment.postID)) {
+                  if (!post.contents) post.contents = [];
+                  post.contents.push(comment.comments);
+                }
+              });
             });
-          });
-        }
-        finalPostsData = postsData;
-      })
-      .catch((err) => {
-        console.log("getting Post Error:", err);
-      });
-    setPostData(finalPostsData);
+          }
+          finalPostsData = postsData;
+        })
+        .catch((err) => {
+          console.log("getting Post Error:", err);
+        });
+      setPostData(finalPostsData);
+    }
   };
 
   const handleDeletePost = async (postId) => {
-    await axios
-      .delete(`${url}/post/${postId}`, config)
-      .then(() => {
-        handleData();
-        setShowConfirmAlert(false);
-      })
-      .catch((err) => console.log("error in deleteing post", err));
+    if (canDo("deletePost")) {
+      await axios
+        .delete(`${url}/post/${postId}`, config)
+        .then(() => {
+          handleData();
+          setShowConfirmAlert(false);
+        })
+        .catch((err) => console.log("error in deleteing post", err));
+    }
   };
 
   const handleEditPost = async (e, postId) => {
-    const body = {
-      title: e.target.post.value,
-      content: "",
-    };
-    await axios
-      .put(`${url}/post/${postId}`, body, config)
-      .then(() => handleData())
-      .catch((err) => console.log("error in editing post", err));
+    if (canDo("updatePost")) {
+      const body = {
+        title: e.target.post.value,
+        content: "",
+      };
+      await axios
+        .put(`${url}/post/${postId}`, body, config)
+        .then(() => handleData())
+        .catch((err) => console.log("error in editing post", err));
+    }
   };
 
   useEffect(() => {
+    if (!loggedIn) navigate("/");
     handleData();
   }, []);
 
@@ -188,7 +201,7 @@ export default function Post() {
                       >
                         Add Comment
                       </button>
-                      {cookies.userCookie.user.role === "admin" && (
+                      {userData.userInfo.role === "admin" && (
                         <>
                           <button
                             onClick={() =>

@@ -1,13 +1,11 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import base64 from 'base-64';
 import { useContext } from "react";
 import { ListContext } from "./Context";
 
-export default function Signin({cookie}) {
-  const { setCookie } = useContext(ListContext);
+export default function Signin() {
+  const { login, loggedIn } = useContext(ListContext);
   const navigate = useNavigate();
   const handleSignin = async (e) => {
     e.preventDefault();
@@ -16,27 +14,11 @@ export default function Signin({cookie}) {
         "Error One or more fields are empty please fill them all and try again"
       );
     }
-
-    const url = process.env.REACT_APP_BACK_END_URL;
-
      const username = e.target.username.value.toLowerCase();
      const password =  e.target.password.value;
-     const basicAuth = base64.encode(`${username}:${password}`);
 
-     console.log("basicAuth", basicAuth);
-
-
-    await axios
-      .post(`${url}/signin`, {}, {
-        headers: { Authorization: `Basic ${basicAuth}` }
-      }).then((result) => {
-        setCookie('userCookie', result.data, { path: '/' })
-        console.log("result.data", result.data);
-        navigate("/posts");
-      })
-      .catch((err) => {
-        alert("Error " + err.response.data);
-      });
+       await login(username, password);
+       navigate ("/posts")
   };
   return (
     <div className="container w-25 mt-5 p-4 card shadow">
