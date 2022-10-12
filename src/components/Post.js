@@ -17,7 +17,7 @@ export default function Post() {
   const [showEditPostForm, setShowEditPostForm] = useState({ show: false });
   const [postData, setPostData] = useState([]);
   const [postId, setPostId] = useState();
-  const { token, loggedIn, canDo, userData } = useContext(ListContext);
+  const { canDo, canDoStatus, token, userData, loggedIn } = useContext(ListContext);
   const navigate = useNavigate();
   const url = process.env.REACT_APP_BACK_END_URL;
   const bearerAuth = token;
@@ -42,7 +42,8 @@ export default function Post() {
   };
 
   const handleAddPostSubmit = async (event) => {
-    if (canDo("addPost")) {
+     canDo("addPost");
+    if (canDoStatus) {
       event.preventDefault();
       const bodyObj = { title: event.target.post.value, content: "" };
       await axios.post(`${url}/post`, bodyObj, config);
@@ -52,7 +53,8 @@ export default function Post() {
   };
 
   const handleAddCommentSubmit = async (event) => {
-    if (canDo("addComment")) {
+    canDo("addComment");
+    if (canDoStatus) {
       event.preventDefault();
 
       const body = {
@@ -73,7 +75,8 @@ export default function Post() {
   };
 
   const handleData = async () => {
-    if (canDo("getPosts")) {
+    canDo("getPosts");
+    if (canDoStatus) {
       let postsData = [];
       let finalPostsData = [];
       await axios
@@ -108,7 +111,8 @@ export default function Post() {
   };
 
   const handleDeletePost = async (postId) => {
-    if (canDo("deletePost")) {
+    canDo("deletePost");
+    if (canDoStatus) {
       await axios
         .delete(`${url}/post/${postId}`, config)
         .then(() => {
@@ -120,7 +124,8 @@ export default function Post() {
   };
 
   const handleEditPost = async (e, postId) => {
-    if (canDo("updatePost")) {
+    canDo("updatePost");
+    if (canDoStatus) {
       const body = {
         title: e.target.post.value,
         content: "",
@@ -133,6 +138,7 @@ export default function Post() {
   };
 
   useEffect(() => {
+    console.log("loggedIn", loggedIn);
     if (!loggedIn) navigate("/");
     handleData();
   }, []);
